@@ -2,6 +2,15 @@ import pool from "../../lib/db";
 import axios from "axios";
 import event_ids from "../../mockdata/event_ids";
 
+const formatTime = (dateTimeString) => {
+    const date = new Date(dateTimeString);
+    return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
+};
+
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method Not Allowed" });
@@ -39,13 +48,14 @@ export default async function handler(req, res) {
                         const secondTeam = match.SecondTeamName;
                         const winner = match.FirstTeamWon ? firstTeam : secondTeam;
                         const setScores = match.Sets.map(set => set.ScoreText).filter(Boolean).join(", ");
+                        const matchTime = formatTime(match.ScheduledStartDateTime);
 
                         // Insert into PostgreSQL (Preventing Duplicates)
                         await pool.query(
-                            `INSERT INTO matches (event_name, match_id, first_team, second_team, winner, set_scores)
-                             VALUES ($1, $2, $3, $4, $5, $6)
+                            `INSERT INTO matches (event_name, match_id, first_team, second_team, winner, set_scores, match_time)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7)
                              ON CONFLICT (match_id, event_name) DO NOTHING`,
-                            [eventName, matchId, firstTeam, secondTeam, winner, setScores]
+                            [eventName, matchId, firstTeam, secondTeam, winner, setScores, matchTime]
                         );
                     }
                 }

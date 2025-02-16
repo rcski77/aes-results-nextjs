@@ -10,6 +10,7 @@ export default function MatchTable({ matches, selectedTeam }) {
                     <tr className="bg-gray-200">
                         <th className="border p-2">Event</th>
                         <th className="border p-2">Match ID</th>
+                        <th className="border p-2">Match Time</th>
                         <th className="border p-2">First Team</th>
                         <th className="border p-2">Second Team</th>
                         <th className="border p-2">Winner</th>
@@ -21,6 +22,7 @@ export default function MatchTable({ matches, selectedTeam }) {
                         <tr key={index} className="text-center text-white">
                             <td className="border p-2">{match.event_name || "N/A"}</td>
                             <td className="border p-2">{match.match_id || "N/A"}</td>
+                            <td className="border p-2">{match.match_time|| "N/A"}</td>
                             <td className="border p-2">{match.first_team || "N/A"}</td>
                             <td className="border p-2">{match.second_team || "N/A"}</td>
                             <td

@@ -4,9 +4,8 @@ import MatchTable from "./components/MatchTable";
 export default function Home() {
     const [matches, setMatches] = useState([]);  
     const [selectedTeam, setSelectedTeam] = useState("All Teams");
-    const [selectedEvent, setSelectedEvent] = useState("All Events"); // ✅ Event filter state
     const [loading, setLoading] = useState(false);
-    const [allEvents, setAllEvents] = useState([]);  // ✅ Store unique event names
+    const [allTeams, setAllTeams] = useState([]);  // ✅ Track all teams separately
 
     // ✅ Fetch stored matches from PostgreSQL on page load
     const fetchStoredMatches = async () => {
@@ -45,37 +44,22 @@ export default function Home() {
         setLoading(false);
     };
 
-    // ✅ Extract unique event names whenever `matches` changes
+    // ✅ Update `allTeams` whenever `matches` changes
     useEffect(() => {
         if (matches.length > 0) {
-            const events = [...new Set(
-                matches.map(m => m.event_name?.trim()).filter(Boolean)
+            const teams = [...new Set(
+                matches.flatMap(m => [m.first_team?.trim(), m.second_team?.trim()])
+                .filter(Boolean)  // ✅ Remove empty values
             )].sort((a, b) => a.localeCompare(b));
-
-            setAllEvents(events);
-            console.log("✅ Updated Event List:", events);
+            setAllTeams(teams);
+            console.log("✅ Updated Team List:", teams);  // Debugging
         }
-    }, [matches]);
+    }, [matches]);  // ✅ Runs whenever `matches` updates
 
-    // ✅ Extract unique teams based on the selected event
-    const filteredTeams = () => {
-        const filteredMatches = matches.filter(m => selectedEvent === "All Events" || m.event_name === selectedEvent);
-        return [...new Set(
-            filteredMatches.flatMap(m => [m.first_team?.trim(), m.second_team?.trim()])
-            .filter(Boolean)
-        )].sort((a, b) => a.localeCompare(b));
-    };
-
-    // ✅ Update the team list whenever the selected event changes
-    useEffect(() => {
-        setSelectedTeam("All Teams"); // Reset selected team when event changes
-    }, [selectedEvent]);
-
-    // ✅ Filter matches based on selected team and event
-    const filteredMatches = matches.filter(m => 
-        (selectedEvent === "All Events" || m.event_name === selectedEvent) &&
-        (selectedTeam === "All Teams" || m.first_team === selectedTeam || m.second_team === selectedTeam)
-    );
+    // ✅ Filter matches based on selected team
+    const filteredMatches = selectedTeam === "All Teams"
+        ? matches
+        : matches.filter(m => m.first_team === selectedTeam || m.second_team === selectedTeam);
 
     return (
         <div className="container mx-auto p-6">
@@ -92,21 +76,6 @@ export default function Home() {
                 </button>
             </div>
 
-            {/* ✅ Event Selection Dropdown */}
-            <div className="mt-4">
-                <label className="block text-lg font-medium">Filter by Event:</label>
-                <select
-                    className="bg-white text-black border border-gray-300 p-2 rounded w-full"
-                    value={selectedEvent}
-                    onChange={e => setSelectedEvent(e.target.value)}
-                >
-                    <option>All Events</option>
-                    {allEvents.map(event => (
-                        <option key={event}>{event}</option>
-                    ))}
-                </select>
-            </div>
-
             {/* ✅ Team Selection Dropdown */}
             <div className="mt-4">
                 <label className="block text-lg font-medium">Filter by Team:</label>
@@ -116,14 +85,14 @@ export default function Home() {
                     onChange={e => setSelectedTeam(e.target.value)}
                 >
                     <option>All Teams</option>
-                    {filteredTeams().map(team => (
+                    {allTeams.map(team => (
                         <option key={team}>{team}</option>
                     ))}
                 </select>
             </div>
 
             {/* ✅ Match Table */}
-            <MatchTable matches={filteredMatches} selectedTeam={selectedTeam} selectedEvent={selectedEvent} />
+            <MatchTable matches={filteredMatches} selectedTeam={selectedTeam} />
         </div>
     );
 }
