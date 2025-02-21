@@ -4,7 +4,8 @@ const event_ids = [
     // "PTAwMDAwMzY5MTI90",  // Nike Classic
     // "PTAwMDAwMzcwNDg90", // OVR 18s Qualifier
     // "PTAwMDAwMzcxNTM90", // Dallas 18s Qualifier
-    "PTAwMDAwMzgzNjE90", // 2025 NIT
+    //"PTAwMDAwMzgzNjE90", // 2025 NIT
+    "PTAwMDAwMzc0NDQ90", // 219 President
 ];
 
 export default event_ids;

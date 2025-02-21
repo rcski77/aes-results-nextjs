@@ -34,6 +34,7 @@ export default async function handler(req, res) {
 
                 for (const team of teams) {
                     const aesTeamId = team.TeamId;
+                    const teamCode = team.TeamCode || "N/A";
                     const matchUrl = `https://results.advancedeventsystems.com/api/event/${event_id}/division/${divisionId}/team/${aesTeamId}/schedule/past`;
 
                     const matchResponse = await axios.get(matchUrl);
@@ -52,10 +53,10 @@ export default async function handler(req, res) {
 
                         // Insert into PostgreSQL (Preventing Duplicates)
                         await pool.query(
-                            `INSERT INTO matches (event_name, match_id, first_team, second_team, winner, set_scores, match_time)
-                             VALUES ($1, $2, $3, $4, $5, $6, $7)
+                            `INSERT INTO matches (event_name, match_id, team_code, first_team, second_team, winner, set_scores, match_time)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                              ON CONFLICT (match_id, event_name) DO NOTHING`,
-                            [eventName, matchId, firstTeam, secondTeam, winner, setScores, matchTime]
+                            [eventName, matchId, teamCode, firstTeam, secondTeam, winner, setScores, matchTime]
                         );
                     }
                 }
