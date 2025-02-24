@@ -22,7 +22,7 @@ export default async function handler(req, res) {
             
             const eventUrl = `https://results.advancedeventsystems.com/api/event/${event_id}`;
             const eventResponse = await axios.get(eventUrl);
-            const eventName = eventResponse.data?.Name || `Event_${event_id}`;
+            const eventName = eventResponse.data?.Name.trim() || `Event_${event_id}`;
             const divisions = eventResponse.data?.Divisions || [];
 
             for (const division of divisions) {

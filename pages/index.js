@@ -4,9 +4,9 @@ import MatchTable from "./components/MatchTable";
 export default function Home() {
     const [matches, setMatches] = useState([]);  
     const [selectedTeam, setSelectedTeam] = useState("All Teams");
-    const [selectedEvent, setSelectedEvent] = useState("All Events"); // ✅ Event filter state
+    const [selectedEvent, setSelectedEvent] = useState("All Events"); // Event filter state
     const [loading, setLoading] = useState(false);
-    const [allEvents, setAllEvents] = useState([]);  // ✅ Store unique event names
+    const [allEvents, setAllEvents] = useState([]);  // Store unique event names
 
     // ✅ Fetch stored matches from PostgreSQL on page load
     const fetchStoredMatches = async () => {
